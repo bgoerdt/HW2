@@ -1,5 +1,6 @@
 class Movie < ActiveRecord::Base
-  def sort_by_header(header)
+
+  def self.sort_by_header(header)
     if header == "title"
       Movie.order("title").all
     elsif header == "release_date"
@@ -7,5 +8,9 @@ class Movie < ActiveRecord::Base
     else
       Movie.all
     end
+  end
+
+  def self.get_all_ratings
+    Movie.find_all_ratings
   end
 end
