@@ -8,7 +8,8 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.get_all_ratings
     @header = params[:header]
-    @movies = Movie.order(@header).all
+    @checked_ratings = params[:ratings].keys
+    @movies = Movie.order(@header).where(:rating => @checked_ratings).all
   end
 
   def new
