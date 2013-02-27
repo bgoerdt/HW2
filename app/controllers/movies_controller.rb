@@ -7,9 +7,38 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.get_all_ratings
-    @header = params[:header]
-    @checked_ratings = params[:ratings].keys
-    @movies = Movie.order(@header).where(:rating => @checked_ratings).all
+    @redirect = false
+
+    if params.has_key?(:header)
+      session[:header] = params[:header]
+      @header = params[:header]
+      @movies = Movie.order(@header)
+    elsif session.has_key?(:header)
+      @redirect = true
+      params.update({:header=>session[:header]})
+      #@header = session[:header]
+      #@movies = Movie.order(@header)
+    else
+      @movies = Movie.all
+    end
+
+    if params.has_key?(:ratings)
+      session[:ratings] = params[:ratings]
+      @checked_ratings = params[:ratings].keys
+    elsif session.has_key?(:ratings)
+      @redirect = true
+      params.update({:ratings=>session[:ratings]})
+    else
+      @checked_ratings = @all_ratings
+    end
+
+    if @redirect
+      flash.keep
+      redirect_to :action=>:index, :ratings=>params[:ratings], :header=>params[:header]
+    else
+      @movies = @movies.where(:rating => @checked_ratings).all
+    end
+
   end
 
   def new
